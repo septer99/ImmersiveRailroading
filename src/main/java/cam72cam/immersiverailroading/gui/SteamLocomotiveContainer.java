@@ -24,7 +24,7 @@ public class SteamLocomotiveContainer extends ContainerBase {
 		currY = offsetTopBar(0, currY, horizSlots*2);
 		currY = offsetSlotBlock(0, currY, horizSlots*2, numRows);
 		
-		this.addSlotToContainer(new FilteredSlot(itemHandler, stock.getInventorySize()-2, 0 + paddingLeft + 5, currY - numRows * slotSize + 4, FilteredSlot.FLUID_CONTAINER));
+		// this.addSlotToContainer(new FilteredSlot(itemHandler, stock.getInventorySize()-2, 0 + paddingLeft + 5, currY - numRows * slotSize + 4, FilteredSlot.FLUID_CONTAINER));
 		this.addSlotToContainer(new FilteredSlot(itemHandler, stock.getInventorySize()-1, 0 + paddingLeft + slotSize * horizSlots*2 - slotSize - 5, currY - numRows * slotSize + 4, FilteredSlot.NONE));
 		currY = offsetPlayerInventoryConnector(0, currY, width, horizSlots*2);
 		
