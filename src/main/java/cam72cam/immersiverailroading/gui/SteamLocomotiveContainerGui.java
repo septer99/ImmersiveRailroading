@@ -34,8 +34,8 @@ public class SteamLocomotiveContainerGui extends ContainerGuiBase {
     	
         this.mc.getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
         
-        currY = drawTopBar(i, currY, horizSlots*2);
-    	currY = drawSlotBlock(i, currY, horizSlots*2, inventoryRows, horizSlots*2 * inventoryRows);
+        currY = drawTopBar(i, currY, horizSlots*2);	//draw top bar for fluid container
+    	currY = drawSlotBlock(i, currY, horizSlots*2, inventoryRows, horizSlots*2 * inventoryRows);	//draw slot block behin fluid container
     	
     	drawTankBlock(i + paddingLeft, currY - inventoryRows * slotSize, horizSlots*2, inventoryRows, stock.getLiquid(), stock.getLiquidAmount() / (float)stock.getTankCapacity().MilliBuckets());	//fluid container
 
@@ -46,10 +46,10 @@ public class SteamLocomotiveContainerGui extends ContainerGuiBase {
     	drawSlotOverlay(template, i + paddingLeft+5, currY - inventoryRows * slotSize + 4);	//fluid input overlay
     	drawSlot(i + paddingLeft + slotSize * horizSlots*2 - slotSize-5, currY - inventoryRows * slotSize + 4);	//fluid output
     	
-    	currY = drawBottomBar(i, currY, horizSlots*2);
+    	currY = drawBottomBar(i, currY, horizSlots*2);	//draw bottom bar for fluid container
 
     	int prevY = currY;
-    	currY = drawSlotBlock(i + horizSlots * slotSize/2, currY, horizSlots, inventoryRows, stock.getInventorySize()-2);
+    	//currY = drawSlotBlock(i + horizSlots * slotSize/2, currY, horizSlots, inventoryRows, stock.getInventorySize()-2);	//draw loco inventory block
     	try {
     		Map<Integer, Integer> burnTime = stock.getBurnTime();
     		Map<Integer, Integer> burnMax = stock.getBurnMax();
