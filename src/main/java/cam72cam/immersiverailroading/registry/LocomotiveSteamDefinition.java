@@ -24,6 +24,7 @@ public class LocomotiveSteamDefinition extends LocomotiveDefinition {
 	private ValveGearType valveGear;
 	private int numSlots;
 	private int width;
+	private boolean isOilFueled;
 	
 	public ResourceLocation whistle;
 	public ResourceLocation idle;
@@ -45,6 +46,7 @@ public class LocomotiveSteamDefinition extends LocomotiveDefinition {
 		JsonObject properties = data.get("properties").getAsJsonObject();
 		tankCapacity = FluidQuantity.FromLiters((int) Math.ceil(properties.get("water_capacity_l").getAsInt() * internal_inv_scale));
 		maxPSI = (int) Math.ceil(properties.get("max_psi").getAsInt() * internal_inv_scale);
+		isOilFueled = properties.get("is_oil_fueled").getAsBoolean();
 		valveGear = ValveGearType.valueOf(properties.get("valve_gear").getAsString().toUpperCase());
 		JsonObject firebox = data.get("firebox").getAsJsonObject();
 		this.numSlots = (int) Math.ceil(firebox.get("slots").getAsInt() * internal_inv_scale);
