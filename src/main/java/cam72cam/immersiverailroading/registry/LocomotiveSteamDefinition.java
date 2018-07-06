@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import com.google.gson.JsonObject;
 
@@ -20,6 +21,7 @@ import net.minecraft.world.World;
 
 public class LocomotiveSteamDefinition extends LocomotiveDefinition {
 	private FluidQuantity tankCapacity;
+	private FluidQuantity oilTankCapacity;
 	private int maxPSI;
 	private ValveGearType valveGear;
 	private int numSlots;
@@ -38,6 +40,9 @@ public class LocomotiveSteamDefinition extends LocomotiveDefinition {
 		if (tankCapacity == null) {
 			tankCapacity = FluidQuantity.ZERO;
 		}
+		if (oilTankCapacity == null) {
+			oilTankCapacity = FluidQuantity.ZERO;
+		}
 	}
 	
 	@Override
@@ -45,6 +50,7 @@ public class LocomotiveSteamDefinition extends LocomotiveDefinition {
 		super.parseJson(data);
 		JsonObject properties = data.get("properties").getAsJsonObject();
 		tankCapacity = FluidQuantity.FromLiters((int) Math.ceil(properties.get("water_capacity_l").getAsInt() * internal_inv_scale));
+		oilTankCapacity = FluidQuantity.FromLiters((int) Math.ceil(properties.get("oil_capacity_l").getAsInt() * internal_inv_scale));
 		maxPSI = (int) Math.ceil(properties.get("max_psi").getAsInt() * internal_inv_scale);
 		isOilFueled = properties.get("is_oil_fueled").getAsBoolean();
 		valveGear = ValveGearType.valueOf(properties.get("valve_gear").getAsString().toUpperCase());
@@ -185,6 +191,14 @@ public class LocomotiveSteamDefinition extends LocomotiveDefinition {
 
 	public FluidQuantity getTankCapacity(Gauge gauge) {
 		return this.tankCapacity.scale(gauge.scale()).min(FluidQuantity.FromBuckets(1)).roundBuckets();
+	}
+	
+	public FluidQuantity getOilTankCapacity(Gauge gauge) {
+		return this.oilTankCapacity.scale(gauge.scale()).min(FluidQuantity.FromBuckets(1)).roundBuckets();
+	}
+	
+	public Boolean isOilFueled() {
+		return this.isOilFueled;
 	}
 	
 	public int getMaxPSI(Gauge gauge) {

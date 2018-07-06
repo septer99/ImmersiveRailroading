@@ -11,7 +11,8 @@
 		"tractive_effort_lbf": 28450,
 		"max_speed_kmh": 120,
 		"valve_gear": "walschaerts",
-		"weight_kg": 59760
+		"weight_kg": 59760,
+		"is_oil_fueled": true
 	},
 	"firebox": {
 		"slots": 8,

@@ -27,7 +27,24 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 public abstract class FreightTank extends Freight {
 	private static final DataParameter<Integer> FLUID_AMOUNT = EntityDataManager.createKey(FreightTank.class, DataSerializers.VARINT);
 	private static final DataParameter<String> FLUID_TYPE = EntityDataManager.createKey(FreightTank.class, DataSerializers.STRING);
+	private static final DataParameter<Integer> OIL_FLUID_AMOUNT = EntityDataManager.createKey(FreightTank.class, DataSerializers.VARINT);
+	private static final DataParameter<String> OIL_FLUID_TYPE = EntityDataManager.createKey(FreightTank.class, DataSerializers.STRING);
+	
 	protected final FluidTank theTank = new FluidTank(null, 0) {
+		@Override
+		public boolean canFillFluidType(FluidStack fluid) {
+			return canFill() && (getFluidFilter() == null || getFluidFilter().contains(fluid.getFluid()));
+		}
+		
+		@Override
+		public void onContentsChanged() {
+			if (!world.isRemote) {
+				FreightTank.this.onTankContentsChanged();
+			}
+		}
+	};;
+	
+	protected final FluidTank oilTank = new FluidTank(null , 0) {
 		@Override
 		public boolean canFillFluidType(FluidStack fluid) {
 			return canFill() && (getFluidFilter() == null || getFluidFilter().contains(fluid.getFluid()));
@@ -46,6 +63,8 @@ public abstract class FreightTank extends Freight {
 		
 		dataManager.register(FLUID_AMOUNT, 0);
 		dataManager.register(FLUID_TYPE, "EMPTY");
+		dataManager.register(OIL_FLUID_AMOUNT, 0);
+		dataManager.register(OIL_FLUID_TYPE, "EMPTY");
 	}
 
 	/*
@@ -53,6 +72,7 @@ public abstract class FreightTank extends Freight {
 	 * Specifications
 	 */
 	public abstract FluidQuantity getTankCapacity();
+	public abstract FluidQuantity getOilTankCapacity();
 
 	/**
 	 * null == all
@@ -99,6 +119,18 @@ public abstract class FreightTank extends Freight {
 		return FluidRegistry.getFluid(type);
 	}
 	
+	public int getOilAmount() {
+		return this.getDataManager().get(OIL_FLUID_AMOUNT);
+	}
+	
+	public Fluid getOilType() {
+		String type = this.getDataManager().get(OIL_FLUID_TYPE);
+		if (type.equals("EMPTY")) {
+			return null;
+		}
+		return FluidRegistry.getFluid(type);
+	}
+	
 	
 	/*
 	 * 
@@ -110,6 +142,7 @@ public abstract class FreightTank extends Freight {
 	public void onAssemble() {
 		super.onAssemble();
 		this.theTank.setCapacity(this.getTankCapacity().MilliBuckets());
+		this.oilTank.setCapacity(this.getTankCapacity().MilliBuckets());
 		onTankContentsChanged();
 	}
 	
@@ -118,6 +151,8 @@ public abstract class FreightTank extends Freight {
 		super.onDissassemble();
 		this.theTank.drain(this.theTank.getFluidAmount(), true);
 		this.theTank.setCapacity(0);
+		this.oilTank.drain(this.oilTank.getFluidAmount(), true);
+		this.oilTank.setCapacity(0);
 		onTankContentsChanged();
 	}
 
@@ -131,6 +166,13 @@ public abstract class FreightTank extends Freight {
 			this.dataManager.set(FLUID_TYPE, "EMPTY");
 		} else {
 			this.dataManager.set(FLUID_TYPE, FluidRegistry.getFluidName(theTank.getFluid()));
+		}
+		
+		this.dataManager.set(OIL_FLUID_AMOUNT, oilTank.getFluidAmount());
+		if (oilTank.getFluid() == null) {
+			this.dataManager.set(OIL_FLUID_TYPE, "EMPTY");
+		} else {
+			this.dataManager.set(OIL_FLUID_TYPE, FluidRegistry.getFluidName(oilTank.getFluid()));
 		}
 	}
 	
@@ -152,12 +194,14 @@ public abstract class FreightTank extends Freight {
 	protected void writeEntityToNBT(NBTTagCompound nbttagcompound) {
 		super.writeEntityToNBT(nbttagcompound);
 		nbttagcompound.setTag("tank", this.theTank.writeToNBT(new NBTTagCompound()));
+		nbttagcompound.setTag("oil_tank", this.oilTank.writeToNBT(new NBTTagCompound()));
 	}
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound nbttagcompound) {
 		super.readEntityFromNBT(nbttagcompound);
 		this.theTank.readFromNBT(nbttagcompound.getCompoundTag("tank"));
+		this.oilTank.readFromNBT(nbttagcompound.getCompoundTag("oil_tank"));
 		onTankContentsChanged();
 	}
 	

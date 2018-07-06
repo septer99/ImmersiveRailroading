@@ -649,6 +649,14 @@ public class LocomotiveSteam extends Locomotive {
 	public FluidQuantity getTankCapacity() {
 		return this.getDefinition().getTankCapacity(gauge);
 	}
+	
+	public FluidQuantity getOilTankCapacity() {
+		return this.getDefinition().getOilTankCapacity(gauge);
+	}
+	
+	public Boolean isOilFueled() {
+		return this.getDefinition().isOilFueled();
+	}
 
 	@Override
 	public List<Fluid> getFluidFilter() {

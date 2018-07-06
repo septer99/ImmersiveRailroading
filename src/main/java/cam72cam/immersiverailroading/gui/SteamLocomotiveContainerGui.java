@@ -7,6 +7,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.profiler.ISnooperInfo;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public class SteamLocomotiveContainerGui extends ContainerGuiBase {
 	
@@ -47,9 +49,32 @@ public class SteamLocomotiveContainerGui extends ContainerGuiBase {
     	drawSlot(i + paddingLeft + slotSize * horizSlots*2 - slotSize-5, currY - inventoryRows * slotSize + 4);	//fluid output
     	
     	currY = drawBottomBar(i, currY, horizSlots*2);	//draw bottom bar for fluid container
+    	
+    	String quantityStr = String.format("%s/%s", stock.getLiquidAmount(), stock.getTankCapacity().MilliBuckets());
+		this.drawCenteredString(this.fontRenderer, quantityStr, quantX, quantY, 14737632);
 
     	int prevY = currY;
-    	//currY = drawSlotBlock(i + horizSlots * slotSize/2, currY, horizSlots, inventoryRows, stock.getInventorySize()-2);	//draw loco inventory block
+    	if (!stock.isOilFueled()) {
+    		currY = drawSlotBlock(i + horizSlots * slotSize/2, currY, horizSlots, inventoryRows, stock.getInventorySize()-2);	//draw loco inventory block
+    	} else {
+    		currY = drawTopBar(i, currY, horizSlots*2);	//draw top bar for fluid container
+        	currY = drawSlotBlock(i, currY, horizSlots*2, inventoryRows, horizSlots*2 * inventoryRows);	//draw slot block behin fluid container
+        	
+        	drawTankBlock(i + paddingLeft, currY - inventoryRows * slotSize, horizSlots*2, inventoryRows, stock.getLiquid(), stock.getLiquidAmount() / (float)stock.getTankCapacity().MilliBuckets());	//fluid container
+
+        	quantX = i + paddingLeft + horizSlots*2 * slotSize/2;
+        	quantY = currY - inventoryRows * slotSize + inventoryRows * slotSize/2 - 4;
+        	
+        	drawSlot(i + paddingLeft+5, currY - inventoryRows * slotSize + 4);	//fluid input
+        	drawSlotOverlay(template, i + paddingLeft+5, currY - inventoryRows * slotSize + 4);	//fluid input overlay
+        	drawSlot(i + paddingLeft + slotSize * horizSlots*2 - slotSize-5, currY - inventoryRows * slotSize + 4);	//fluid output
+        	
+        	currY = drawBottomBar(i, currY, horizSlots*2);	//draw bottom bar for fluid container
+    		
+    		quantityStr = String.format("%s/%s", stock.getLiquidAmount(), stock.getOilTankCapacity().MilliBuckets());
+    		this.drawCenteredString(this.fontRenderer, quantityStr, quantX, quantY, 14737632);
+    	}
+    	
     	try {
     		Map<Integer, Integer> burnTime = stock.getBurnTime();
     		Map<Integer, Integer> burnMax = stock.getBurnMax();
@@ -79,8 +104,5 @@ public class SteamLocomotiveContainerGui extends ContainerGuiBase {
     	
     	currY = drawPlayerInventoryConnector(i, currY, width, horizSlots);
     	currY = drawPlayerInventory((width - playerXSize) / 2, currY);
-    	
-    	String quantityStr = String.format("%s/%s", stock.getLiquidAmount(), stock.getTankCapacity().MilliBuckets());
-		this.drawCenteredString(this.fontRenderer, quantityStr, quantX, quantY, 14737632);
     }
 }

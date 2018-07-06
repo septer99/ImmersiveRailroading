@@ -20,6 +20,7 @@ public class CarTankDefinition extends EntityRollingStockDefinition {
 
 	private List<Fluid> fluidFilter; // null == no filter
 	private FluidQuantity capacity;
+	private FluidQuantity oilCapacity;
 	
 	public CarTankDefinition(String defID, JsonObject data) throws Exception {
 		super(defID, data);
@@ -27,6 +28,9 @@ public class CarTankDefinition extends EntityRollingStockDefinition {
 		// Handle null data
 		if (capacity == null) {
 			capacity = FluidQuantity.ZERO;
+		}
+		if (oilCapacity == null) {
+			oilCapacity = FluidQuantity.ZERO;
 		}
 	}
 	
@@ -62,6 +66,10 @@ public class CarTankDefinition extends EntityRollingStockDefinition {
 
 	public FluidQuantity getTankCapaity(Gauge gauge) {
 		return this.capacity.scale(gauge.scale()).min(FluidQuantity.FromBuckets(1)).roundBuckets();
+	}
+	
+	public FluidQuantity getOilTankCapaity(Gauge gauge) {
+		return this.oilCapacity.scale(gauge.scale()).min(FluidQuantity.FromBuckets(1)).roundBuckets();
 	}
 
 	public List<Fluid> getFluidFilter() {
