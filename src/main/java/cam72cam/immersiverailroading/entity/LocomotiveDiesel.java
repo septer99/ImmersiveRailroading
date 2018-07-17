@@ -190,4 +190,9 @@ public class LocomotiveDiesel extends Locomotive {
 	public FluidQuantity getTankCapacity() {
 		return this.getDefinition().getFuelCapacity(gauge);
 	}
+
+	@Override
+	public FluidQuantity getOilTankCapacity() {
+		return FluidQuantity.ZERO;
+	}
 }

@@ -67,4 +67,9 @@ public class HandCar extends Locomotive {
 	public List<Fluid> getFluidFilter() {
 		return new ArrayList<Fluid>();
 	}
+	
+	@Override
+	public FluidQuantity getOilTankCapacity() {
+		return FluidQuantity.ZERO;
+	}
 }

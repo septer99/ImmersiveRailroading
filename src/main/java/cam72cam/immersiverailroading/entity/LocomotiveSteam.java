@@ -644,8 +644,7 @@ public class LocomotiveSteam extends Locomotive {
 	protected int[] getContainertOutputSlots() {
 		return new int[] { getInventorySize()-1 };
 	}
-
-	@Override
+	
 	public FluidQuantity getTankCapacity() {
 		return this.getDefinition().getTankCapacity(gauge);
 	}

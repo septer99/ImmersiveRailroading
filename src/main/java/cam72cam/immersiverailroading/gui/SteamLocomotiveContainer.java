@@ -26,21 +26,21 @@ public class SteamLocomotiveContainer extends ContainerBase {
 		
 		this.addSlotToContainer(new FilteredSlot(itemHandler, stock.getInventorySize()-2, 0 + paddingLeft + 5, currY - numRows * slotSize + 4, FilteredSlot.FLUID_CONTAINER));	//fluid input slot
 		this.addSlotToContainer(new FilteredSlot(itemHandler, stock.getInventorySize()-1, 0 + paddingLeft + slotSize * horizSlots*2 - slotSize - 5, currY - numRows * slotSize + 4, FilteredSlot.NONE)); //fluid output slot
-		currY = offsetPlayerInventoryConnector(0, currY, width, horizSlots*2);
 		
-		if (!stock.isOilFueled()) {
+		//if (!stock.isOilFueled()) {
+			currY = offsetPlayerInventoryConnector(0, currY, width, horizSlots*2);
+			
 			currY = addFilteredSlotBlock(itemHandler, stock.getInventorySize()-2, horizSlots * slotSize/2, currY, horizSlots, FilteredSlot.BURNABLE);	//register inventory block
-		
-			currY = offsetPlayerInventoryConnector(0, currY, width/2, horizSlots);
+			
+			currY = offsetPlayerInventoryConnector(0, currY, width, horizSlots*2);
 			currY = addPlayerInventory(playerInventory, currY, horizSlots*2);
-		} else {
+		/*} else {
 			currY = offsetTopBar(0, currY, horizSlots*2);
 			currY = offsetSlotBlock(0, currY, horizSlots*2, numRows);
 			
 			this.addSlotToContainer(new FilteredSlot(itemHandler, stock.getInventorySize()-2, 0 + paddingLeft + 5, currY - numRows * slotSize + 4, FilteredSlot.FLUID_CONTAINER));	//fluid input slot
 			this.addSlotToContainer(new FilteredSlot(itemHandler, stock.getInventorySize()-1, 0 + paddingLeft + slotSize * horizSlots*2 - slotSize - 5, currY - numRows * slotSize + 4, FilteredSlot.NONE)); //fluid output slot
-			currY = offsetPlayerInventoryConnector(0, currY, width, horizSlots*2);
-		}
+		}*/
 		
 	}
 	
