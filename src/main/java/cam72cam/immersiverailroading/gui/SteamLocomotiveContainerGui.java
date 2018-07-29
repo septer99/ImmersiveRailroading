@@ -7,8 +7,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.ISnooperInfo;
-import net.minecraftforge.fluids.FluidRegistry;
 
 public class SteamLocomotiveContainerGui extends ContainerGuiBase {
 	
@@ -36,80 +34,77 @@ public class SteamLocomotiveContainerGui extends ContainerGuiBase {
     	
         this.mc.getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
         
-        currY = drawTopBar(i, currY, horizSlots*2);	//draw top bar for fluid container
-    	currY = drawSlotBlock(i, currY, horizSlots*2, inventoryRows, horizSlots*2 * inventoryRows);	//draw slot block behin fluid container
+        currY = drawTopBar(i, currY, horizSlots*2);
+    	currY = drawSlotBlock(i, currY, horizSlots*2, inventoryRows, horizSlots*2 * inventoryRows);
     	
-    	drawTankBlock(i + paddingLeft, currY - inventoryRows * slotSize, horizSlots*2, inventoryRows, stock.getLiquid(), stock.getLiquidAmount() / (float)stock.getTankCapacity().MilliBuckets());	//fluid container
+    	drawTankBlock(i + paddingLeft, currY - inventoryRows * slotSize, horizSlots*2, inventoryRows, stock.getLiquid(), stock.getLiquidAmount() / (float)stock.getTankCapacity().MilliBuckets());
 
     	int quantX = i + paddingLeft + horizSlots*2 * slotSize/2;
     	int quantY = currY - inventoryRows * slotSize + inventoryRows * slotSize/2 - 4;
     	
-    	drawSlot(i + paddingLeft+5, currY - inventoryRows * slotSize + 4);	//fluid input
-    	drawSlotOverlay(template, i + paddingLeft+5, currY - inventoryRows * slotSize + 4);	//fluid input overlay
-    	drawSlot(i + paddingLeft + slotSize * horizSlots*2 - slotSize-5, currY - inventoryRows * slotSize + 4);	//fluid output
+    	int quantOilX = 0;
+    	int quantOilY = 0;
+    	
+    	drawSlot(i + paddingLeft+5, currY - inventoryRows * slotSize + 4);
+    	drawSlotOverlay(template, i + paddingLeft+5, currY - inventoryRows * slotSize + 4);
+    	drawSlot(i + paddingLeft + slotSize * horizSlots*2 - slotSize-5, currY - inventoryRows * slotSize + 4);
+    	
+    	if (stock.isOilFueled()) {
+    		//currY = drawTopBar(i, currY, horizSlots*2);
+        	currY = drawSlotBlock(i, currY, horizSlots*2, inventoryRows, horizSlots*2 * inventoryRows);
+        	
+        	drawTankBlock(i + paddingLeft, currY - inventoryRows * slotSize, horizSlots*2, inventoryRows, stock.getOilType(), stock.getOilAmount() / (float)stock.getOilTankCapacity().MilliBuckets());
+
+        	quantOilX = i + paddingLeft + horizSlots*2 * slotSize/2;
+        	quantOilY = currY - inventoryRows * slotSize + inventoryRows * slotSize/2 - 4;
+        	
+        	drawSlot(i + paddingLeft+5, currY - inventoryRows * slotSize + 4);
+        	drawSlotOverlay(template, i + paddingLeft+5, currY - inventoryRows * slotSize + 4);
+        	drawSlot(i + paddingLeft + slotSize * horizSlots*2 - slotSize-5, currY - inventoryRows * slotSize + 4);
+    	}
     	
     	currY = drawBottomBar(i, currY, horizSlots*2);
     	
-    	String quantityStr = String.format("%s/%s", stock.getLiquidAmount(), stock.getTankCapacity().MilliBuckets());
-		this.drawCenteredString(this.fontRenderer, quantityStr, quantX, quantY, 14737632);
-
-    	//if (!stock.isOilFueled()) {
-			int prevY = currY;
-		
-    		currY = drawSlotBlock(i + horizSlots * slotSize/2, currY, horizSlots, inventoryRows, stock.getInventorySize()-2);	//draw loco inventory block
-    	/*} else {
-    		currY = drawTopBar(i, currY, horizSlots*2);
-    		currY = drawSlotBlock(i, currY, horizSlots*2, inventoryRows, horizSlots*2 * inventoryRows);
-    		
-        	drawTankBlock(i + paddingLeft, currY - inventoryRows * slotSize, horizSlots*2, inventoryRows, stock.getLiquid(), stock.getLiquidAmount() / (float)stock.getTankCapacity().MilliBuckets());	//fluid container
-        	
-        	quantX = i + paddingLeft + horizSlots*2 * slotSize/2;
-        	quantY = currY - inventoryRows * slotSize + inventoryRows * slotSize/2 - 4;
-        	
-        	drawSlot(i + paddingLeft+5, currY - inventoryRows * slotSize + 4);	//fluid input
-        	drawSlotOverlay(template, i + paddingLeft+5, currY - inventoryRows * slotSize + 4);	//fluid input overlay
-        	drawSlot(i + paddingLeft + slotSize * horizSlots*2 - slotSize-5, currY - inventoryRows * slotSize + 4);	//fluid output
-        	
-        	currY = drawBottomBar(i, currY, horizSlots*2);
-        	
-    		quantityStr = String.format("%s/%s", stock.getLiquidAmount(), stock.getOilTankCapacity().MilliBuckets());
-    		this.drawCenteredString(this.fontRenderer, quantityStr, quantX, quantY, 14737632);
-    		
-    		currY = drawPlayerInventoryConnector(i, currY, width, horizSlots);
-        	currY = drawPlayerInventory((width - playerXSize) / 2, currY);
-    	}*/
-    	
     	if (!stock.isOilFueled()) {
-    		try {
-        		Map<Integer, Integer> burnTime = stock.getBurnTime();
-        		Map<Integer, Integer> burnMax = stock.getBurnMax();
-    	    	for (int slot : burnTime.keySet()) {
-    	    		int time = stock.getBurnTime().get(slot);
-    	    		if (time != 0) {
-    	    			float perc = Math.min(1f, (float)time / burnMax.get(slot));
-    	    			
-    	    			int xSlot = slot % this.horizSlots+1;
-    	    			int ySlot = slot / this.horizSlots;
-    	    			
-    	    			int xPos = i + horizSlots * slotSize/2 + (paddingLeft + (xSlot-1) * slotSize);
-    	    			int yPos = (prevY) + ySlot * slotSize;
-    	    			
-    	    			int offset = 1;
-    	    			int zOff = (int) ((slotSize-offset*2-1)*(1-perc));
-    	    			
-    	    			drawRect(xPos+offset, yPos+offset + zOff, xPos + slotSize-offset, yPos + slotSize-offset, 0x77c64306);
-    	    			TextureAtlasSprite sprite = mc.getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
-    	    			drawSprite(sprite, 0xFFFFFFFF, xPos + offset, yPos + offset + zOff, slotSize-offset*2, slotSize-offset*2 - zOff, 1);
-    	    		}
-    	    	}
-        	} catch (Exception ex) {
-        		ex.printStackTrace();
-        	}
+	    	int prevY = currY;
+	    	currY = drawSlotBlock(i + horizSlots * slotSize/2, currY, horizSlots, inventoryRows, stock.getInventorySize()-2);
+	    	try {
+	    		Map<Integer, Integer> burnTime = stock.getBurnTime();
+	    		Map<Integer, Integer> burnMax = stock.getBurnMax();
+		    	for (int slot : burnTime.keySet()) {
+		    		int time = stock.getBurnTime().get(slot);
+		    		if (time != 0) {
+		    			float perc = Math.min(1f, (float)time / burnMax.get(slot));
+		    			
+		    			int xSlot = slot % this.horizSlots+1;
+		    			int ySlot = slot / this.horizSlots;
+		    			
+		    			int xPos = i + horizSlots * slotSize/2 + (paddingLeft + (xSlot-1) * slotSize);
+		    			int yPos = (prevY) + ySlot * slotSize;
+		    			
+		    			int offset = 1;
+		    			int zOff = (int) ((slotSize-offset*2-1)*(1-perc));
+		    			
+		    			drawRect(xPos+offset, yPos+offset + zOff, xPos + slotSize-offset, yPos + slotSize-offset, 0x77c64306);
+		    			TextureAtlasSprite sprite = mc.getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
+		    			drawSprite(sprite, 0xFFFFFFFF, xPos + offset, yPos + offset + zOff, slotSize-offset*2, slotSize-offset*2 - zOff, 1);
+		    		}
+		    	}
+	    	} catch (Exception ex) {
+	    		ex.printStackTrace();
+	    	}
+	    	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     	}
-    	
-    	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     	
     	currY = drawPlayerInventoryConnector(i, currY, width, horizSlots);
     	currY = drawPlayerInventory((width - playerXSize) / 2, currY);
+    	
+    	String quantityStr = String.format("%s/%s", stock.getLiquidAmount(), stock.getTankCapacity().MilliBuckets());
+		this.drawCenteredString(this.fontRenderer, quantityStr, quantX, quantY, 14737632);
+		
+		if (stock.isOilFueled()) {
+			String oilQuantityStr = String.format("%s/%s", stock.getOilAmount(), stock.getOilTankCapacity().MilliBuckets());
+			this.drawCenteredString(this.fontRenderer, oilQuantityStr, quantOilX, quantOilY, 14737632);
+		}
     }
 }
