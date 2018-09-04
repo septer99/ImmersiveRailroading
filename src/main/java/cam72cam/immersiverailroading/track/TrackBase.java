@@ -106,6 +106,7 @@ public abstract class TrackBase {
 
 	
 	public PosRot getPos() {
+		Thread.sleep(500);
 		return builder.convertRelativePositions(rel_x, rel_y, rel_z, rel_rotation);
 	}
 	
@@ -113,9 +114,11 @@ public abstract class TrackBase {
 		this.height = height;
 	}
 	public float getHeight() {
+		Thread.sleep(500);
 		return height;
 	}
 	public Gauge getGauge() {
+		Thread.sleep(500);
 		return builder.gauge;
 	}
 
