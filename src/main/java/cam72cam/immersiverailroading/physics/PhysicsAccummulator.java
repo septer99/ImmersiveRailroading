@@ -37,13 +37,13 @@ public class PhysicsAccummulator {
 		EntityMoveableRollingStock movable = ((EntityMoveableRollingStock)stock);
 		
 		// SHOULD THIS HAVE DIRECTION MULT?
-		double stockMassLb = 2.20462 * stock.getWeight();
-		rollingResistanceNewtons += 0.0015 * stockMassLb * 4.44822f;
+		double stockMassKg = stock.getWeight();
+		rollingResistanceNewtons += 0.57 * (stockMassKg * 10); //0.57 represence the Friction between track and train
 		
 		// SHOULD THIS HAVE DIRECTION MULT?
 		double grade = -Math.tan(Math.toRadians(pos.rotationPitch % 90)) * Config.ConfigBalance.slopeMultiplier;
 		// lbs * 1%gradeResistance * grade multiplier
-		gradeForceNewtons += (stockMassLb / 100) * (grade * 100)  * 4.44822f;
+		gradeForceNewtons += ((stockMassKg * 10) / tan(grade));
 		
 		if (stock instanceof Locomotive) {
 			Locomotive loco = (Locomotive) stock;
@@ -53,11 +53,11 @@ public class PhysicsAccummulator {
 		} else {
 			// Air brake only applies 1/4th
 			// 0.25 = steel wheel on steel rail	
-			brakeAdhesionNewtons += stock.getWeight() * 0.25 * 0.25 * 4.44822f;
+			brakeAdhesionNewtons += ((tractiveEffortNewtons / massToMoveKg) - pos.speed.minecraft()) / pos.speed.minecraft(); //Changed so the wheel adhesion depends on TrainsSpeed and WheelSpeed
 		}
 		
 		int slowdown = movable.getSpeedRetarderSlowdown(pos);
-		rollingResistanceNewtons += slowdown * stockMassLb / 300;
+		rollingResistanceNewtons += (stockMassKg * 10) * 0.57; //0.57 as Steel on Steel RollingRestistance
 	}
 	
 	public Speed getVelocity() {
